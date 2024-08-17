@@ -38,7 +38,7 @@ class FieldChecker(Checker):
         for key in standard.keys():
             if key not in obj:
                 errors.append(f"Missing field: {(prefix + '.' + key) if prefix else key}")
-            if (isinstance(standard[key], dict) 
+            elif (isinstance(standard[key], dict) 
                 and isinstance(obj[key], dict)
                 ):
                 errors += self._check_recursive(obj[key], standard[key], key)
@@ -50,6 +50,7 @@ class FieldChecker(Checker):
                                        self._structure,
                                        prefix="",
                                        )
+        print(errors)
         if len(errors) > 0:
             return False
         return True
