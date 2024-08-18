@@ -7,17 +7,17 @@
 """
 
 from copy import deepcopy
-import json
 import pytest
 
-from src.service import (CurrencyValidator,
-                         DummyValidator,
-                         ExchangeTransform,
-                         NameValidator,
-                         PriceValidator,
-                         Service,
-                         ValidateResult,
-                         )
+from exchange import ExchangeHandler
+from service import (CurrencyValidator,
+                     DummyValidator,
+                     ExchangeTransform,
+                     NameValidator,
+                     PriceValidator,
+                     Service,
+                     ValidateResult,
+                     )
 
 dummy_validator = DummyValidator()
 name_validator = NameValidator()
@@ -68,10 +68,9 @@ class TestCurrencyValidator:
         assert validated_obj == expected
 
 
-usd_to_twd_exchange = ExchangeTransform(frm_country="USD",
-                                        to_country="TWD",
-                                        exchange_rate=31,
-                                        )
+exchange_handler = ExchangeHandler()
+exchange_handler.register("USD", "TWD", 31)
+usd_to_twd_exchange = ExchangeTransform(exchange_handler)
 
 class TestExchangeTransform:
     @pytest.mark.parametrize('price,exchange_transform,expected',
@@ -82,18 +81,15 @@ class TestExchangeTransform:
                        exchange_transform:ExchangeTransform,
                        expected:int,
                        ):
-        assert expected == exchange_transform.transform(price)
-        assert "USD" == exchange_transform.frm_country
-        assert "TWD" == exchange_transform.to_country
+        assert expected == exchange_transform.transform("USD", "TWD", price)
 
 
+exchange_handler = ExchangeHandler()
+exchange_handler.register("USD", "TWD", 31)
 service_class = Service(NameValidator(),
                         PriceValidator(price_ub=2000),
                         CurrencyValidator(["TWD", "USD"]),
-                        ExchangeTransform(frm_country="USD",
-                                          to_country="TWD",
-                                          exchange_rate=31,
-                                          ),
+                        ExchangeTransform(exchange_handler),
                         )
 
 class TestService:

@@ -8,7 +8,10 @@
 
 import pytest
 
-from src.utils import FieldChecker, TypeChecker, InputFormatCheck
+from utils import (FieldChecker,
+                   InputFormatCheck,
+                   TypeChecker,
+                   )
 
 input_format = {
     "A": str,
