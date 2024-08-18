@@ -20,14 +20,14 @@ curl example:
 curl --location 'http://0.0.0.0:15000/api/orders' \
 --header 'Content-Type: application/json' \
 --data '{"id":"A0000001",
-               "name":"Melody Holiday Inn",
-               "address":{"city":"taipei-city",
-                          "district":"da-an-district",
-                          "street":"fuxing-south-road"
-                          },
-               "price": "1",
-               "currency":"TWD"
-               }'
+         "name":"Melody Holiday Inn",
+         "address":{"city":"taipei-city",
+                    "district":"da-an-district",
+                    "street":"fuxing-south-road"
+                    },
+         "price": "1",
+         "currency":"TWD"
+         }'
 ```
 
 ## 還原開發環境
