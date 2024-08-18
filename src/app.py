@@ -9,6 +9,7 @@
 from flask import (Flask,
                    request,
                    )
+from exchange import ExchangeHandler
 from service import (CurrencyValidator,
                      ExchangeTransform,
                      NameValidator,
@@ -35,13 +36,13 @@ NECESSARY_FIELDS = {
 input_checker = InputFormatCheck([FieldChecker(NECESSARY_FIELDS),
                                   TypeChecker(NECESSARY_FIELDS),
                                   ])
+
+exchange_handler = ExchangeHandler()
+exchange_handler.register("USD", "TWD", 31)
 service_class = Service(NameValidator(),
                         PriceValidator(price_ub=2000),
                         CurrencyValidator(["TWD", "USD"]),
-                        ExchangeTransform(frm_country="USD",
-                                          to_country="TWD",
-                                          exchange_rate=31,
-                                          ),
+                        ExchangeTransform(exchange_handler),
                         )
 
 app = Flask(__name__)

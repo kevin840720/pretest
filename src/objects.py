@@ -6,22 +6,16 @@
 @Desc    :  None
 """
 
-from dataclasses import dataclass, field
-from typing import Literal
+from dataclasses import dataclass
 
 @dataclass
-class StructureCheck:
-    errors:list=field(default_factory=list)
+class Exchange:
+    source:str
+    target:str
+    rate:float
 
-    def __post_init__(self):
-        assert isinstance(self.errors, list), ValueError("attribute `errors`: list is required")
-
-    @property
-    def status(self):
-        return True if len(self.errors) == 0 else False
-
-    def merge(self, obj):
-        self.errors += obj.errors
+    def __mul__(self, price:int|float):
+        return self.rate * price
 
 @dataclass
 class Address:

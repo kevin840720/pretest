@@ -6,25 +6,8 @@
 @Desc    :  None
 """
 
-class NameFormatException(ValueError):
+class ExchangeAlreadyExists(ValueError):
     pass
 
-class NameContainsNonEnglish(NameFormatException):
-    pass
-
-class NameIsNotCapitalized(NameFormatException):
-    pass
-
-
-class PriceFormatException(ValueError):
-    pass
-
-class PriceExceedTwoThousans(PriceFormatException):
-    pass
-
-
-class CurrencyFormatException(ValueError):
-    pass
-
-class IllegalCurrencyType(CurrencyFormatException):
+class ExchangeDoNotExists(ValueError):
     pass

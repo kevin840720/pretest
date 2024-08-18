@@ -14,6 +14,7 @@ from typing import (List,
 import json
 import re
 
+from exchange import ExchangeHandler
 from objects import (Address,
                      Order,
                      )
@@ -73,25 +74,20 @@ class Transform(ABC):
 
 class ExchangeTransform(Transform):
     def __init__(self,
-                 frm_country:str,
-                 to_country:str,
-                 exchange_rate:int,
+                 exchange_handler:ExchangeHandler,
                  ) -> None:
         super().__init__()
-        self._frm_country = frm_country
-        self._to_country = to_country
-        self._exchange_rate = exchange_rate
-
-    def transform(self, price:str) -> int:
-        return int(price)*self._exchange_rate
+        self._exchange_handler = exchange_handler
     
-    @property
-    def frm_country(self):
-        return self._frm_country
-
-    @property
-    def to_country(self):
-        return self._to_country
+    def transform(self,
+                  source:str,
+                  target:str,
+                  price:int,
+                  ) -> int:
+        return self._exchange_handler.do_exchange(source,
+                                                  target,
+                                                  int(price),
+                                                  )
 
 class Service:
     def __init__(self,
@@ -106,6 +102,14 @@ class Service:
         self._exchange_transform = exchange_transform
 
     def validate(self, obj:dict) -> ValidateResult:
+        """Validate input order data field by field.
+
+        Args:
+            obj (dict): order data
+
+        Returns:
+            ValidateResult: validated result. `status=200` stand for success.
+        """
         results = [self._name_validator.validate(obj["name"]),
                    self._price_validator.validate(obj["price"]),
                    self._currency_validator.validate(obj["currency"]),
@@ -116,16 +120,24 @@ class Service:
         return result
 
     def transform(self, obj:dict) -> Order:
+        """Transform input order data into self-defined `Order` object.
+
+        Args:
+            obj (dict): order data
+
+        Returns:
+            Order: transformed order data
+        """
         address = Address(obj["address"]["city"],
                           obj["address"]["district"],
                           obj["address"]["street"],
                           )
-        if obj["currency"] == self._exchange_transform.frm_country:
-            price = int(self._exchange_transform.transform(obj["price"]))
-            currency = self._exchange_transform.to_country
-        else:
-            price = int(obj["price"])
-            currency = obj["currency"]
+
+        price = int(self._exchange_transform.transform(obj["currency"],
+                                                       "TWD",
+                                                       obj["price"],
+                                                       ))
+        currency = "TWD"
 
         order = Order(obj["id"],
                       obj["name"],
