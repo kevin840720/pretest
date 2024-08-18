@@ -50,7 +50,6 @@ class FieldChecker(Checker):
                                        self._structure,
                                        prefix="",
                                        )
-        print(errors)
         if len(errors) > 0:
             return False
         return True
